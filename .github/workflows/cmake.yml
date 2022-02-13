@@ -1,0 +1,60 @@
+name: CMake
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  # Setting the Build type to Debug
+  BUILD_TYPE: Debug
+  # setting the name of the executable used in the execute steps below.
+  # THIS MUST MATCH THE NAME OF THE EXECUTABLE IN THE CMAKELISTS.TXT file's
+  #   add_executable command.
+  TEST_EXE: 21f_PA02
+  # the name of any input files (use relative path)
+  INPUT_FILE: data/test_book.txt
+  # the name of any output files (use relative paths)
+  OUTPUT_FILE: data/output.txt
+
+
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally
+    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      # Builds your project in the build folder (on your local machine, this would be
+      # the cmake-build-debug folder
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Execute Tests
+      # This calls your program with no cmd line arguments which should trigger your CATCH tests to run.
+      working-directory: ${{github.workspace}}/build
+      run:  ${{github.workspace}}/build/${{env.TEST_EXE}}
+
+    - name: Execute Project
+      # This step calls your program with the command line args
+      working-directory: ${{github.workspace}}/build
+      run: ${{github.workspace}}/build/${{env.TEST_EXE}} ${{env.INPUT_FILE}} ${{env.OUTPUT_FILE}}
+
+    - name: Upload output files to GitHub so they can be reviewed
+      # This step zips up the data folder and uploads it to Github for you to review.
+      # Note that the sample input will be included as well.  Anything in the data folder will be
+      # zipped.
+      uses: actions/upload-artifact@v2
+      with:
+        name: project_output
+        path: ${{github.workspace}}/build/data
+      
