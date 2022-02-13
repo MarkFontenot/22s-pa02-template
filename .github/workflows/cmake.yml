@@ -12,7 +12,7 @@ env:
   #   add_executable command.
   TEST_EXE: 21f_PA02
   # the name of any input files (use relative path)
-  INPUT_FILE: data/test_book.txt
+  INPUT_FILE: data/test_book.txt data/terms.txt
   # the name of any output files (use relative paths)
   OUTPUT_FILE: data/output.txt
 
@@ -24,7 +24,7 @@ jobs:
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 3
 
     steps:
     - uses: actions/checkout@v2
